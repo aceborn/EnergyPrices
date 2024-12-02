@@ -11,9 +11,6 @@ Compress(app)
 
 GRAPH_FILE = "day_ahead_prices_barchart.html"
 
-# Use an environment variable for cache duration or default to 6 hours
-CACHE_DURATION = int(os.getenv("CACHE_DURATION", 21600))  # 21600 seconds = 6 hours
-
 # Define a root route
 @app.route('/')
 def home():
