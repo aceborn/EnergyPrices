@@ -1,8 +1,6 @@
 from entsoe import EntsoePandasClient
 from dotenv import load_dotenv
 from datetime import datetime
-import time
-import schedule
 import os
 import pandas as pd
 import plotly.graph_objects as go
@@ -19,12 +17,18 @@ def main():
 
     # Initialize the EntsoePandasClient with the API key
     client = EntsoePandasClient(api_key=api_key)
+
+
     # Set start and end times with timezone
     start = pd.Timestamp.now(tz="Europe/Copenhagen")
     end = start + pd.Timedelta(days=1)
+
+    # Query data
     ts_w, ts_e = query(client, start, end)
     outfile_w, outfile_e = csv(ts_w, ts_e)
     dk_w, dk_e = data(outfile_w, outfile_e)
+
+    # Add taxes data and generate graph 
     today = datetime.now()
     month = today.month
     taxes = table_tax(month)
@@ -198,7 +202,7 @@ def graph(dk_w, dk_e):
             marker=dict(color="red"),
         )
     )
-
+    
     # Add dropdown menu
     fig.update_layout(
         updatemenus=[
@@ -253,15 +257,7 @@ def graph(dk_w, dk_e):
     )
 
     # Save the figure as an HTML file
-    fig.write_html("day_ahead_prices_barchart.html")
-
-schedule.every(1).hours.do(main)
+    fig.write_html("day_ahead_prices_barchart.html", full_html=False)
 
 if __name__ == "__main__":
-    import time
-    print("Starting hourly update scheduler...")
     main()
-    while True:
-        print("Checking for scheduled tasks...")
-        schedule.run_pending()
-        time.sleep(1)
